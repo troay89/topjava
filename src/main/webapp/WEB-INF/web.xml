@@ -4,7 +4,6 @@
 		 http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
-    <display-name>Topjava</display-name>
 
     <servlet>
         <servlet-name>userServlet</servlet-name>

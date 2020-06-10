@@ -16,7 +16,7 @@ Build a voting system for deciding where to have lunch.
 
 Each restaurant provides new menu each day.
 
-As a result, provide a link to github repository. It should contain the code, README.md with API documentation and couple curl commands to test it.
+As a result, provide a link to github ru.javawebinar.topjava.repository. It should contain the code, README.md with API documentation and couple curl commands to test it.
 
 -----------------------------
 P.S.: Make sure everything works with latest version that is on github :)
