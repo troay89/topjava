@@ -13,7 +13,6 @@
     <table border="1" , cellspacing="0" , cellpadding="5">
         <thead>
         <tr>
-            <th>ID</th>
             <th>Date/Time</th>
             <th>Description</th>
             <th>Calories</th>
@@ -31,14 +30,14 @@
                     <fmt:formatDate pattern="yyyy.MM.dd HH:mm" value="${ parsedDateTime }"/></td>
                 <td>${mealName.description}</td>
                 <td>${mealName.calories}</td>
-                <td><a href="meals?action=edit&mealId=<c:out value="${mealName.id}"/>">Update</a></td>
+                <td><a href="meals?action=update&mealId=<c:out value="${mealName.id}"/>">Update</a></td>
                 <td><a href="meals?action=delete&mealId=<c:out value="${mealName.id}"/>">Delete</a></td>
             </tr>
         </c:forEach>
         </tbody>
     </table>
     <br>
-    <p><a href="meals?action=insert">Add User</a></p>
+    <p><a href="meals?action=create">Add User</a></p>
 
 </ul>
 </body>
