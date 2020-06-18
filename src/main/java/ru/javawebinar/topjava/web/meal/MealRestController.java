@@ -12,9 +12,7 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
@@ -28,7 +26,7 @@ public class MealRestController {
     private final MealService service;
 
     @Autowired
-    public MealRestController(MealService service){
+    public MealRestController(MealService service) {
         this.service = service;
     }
 
@@ -65,7 +63,7 @@ public class MealRestController {
     }
 
     public List<MealTo> getBetweenHalfOpen(@Nullable LocalDate startDate, @Nullable LocalTime startTime,
-                                           @Nullable LocalDate endDate, @Nullable LocalTime endTime){
+                                           @Nullable LocalDate endDate, @Nullable LocalTime endTime) {
         int userId = SecurityUtil.authUserId();
         log.info("getBetween dates({} - {}) time({} - {}) for user {}", startDate, endDate, startTime, endTime, userId);
         List<Meal> mealsDateFiltered = service.getBetweenHalfOpen(startDate, endDate, userId);

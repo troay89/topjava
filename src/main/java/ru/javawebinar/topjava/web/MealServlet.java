@@ -6,9 +6,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StringUtils;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.repository.inmemory.InMemoryMealRepository;
-import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletConfig;
@@ -23,7 +20,8 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
-import static ru.javawebinar.topjava.util.DateTimeUtil.*;
+import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
+import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
@@ -51,9 +49,9 @@ public class MealServlet extends HttpServlet {
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        if(StringUtils.isEmpty(request.getParameter("id"))){
+        if (StringUtils.isEmpty(request.getParameter("id"))) {
             mealRestController.create(meal);
-        }else {
+        } else {
             mealRestController.update(meal, getId(request));
         }
         response.sendRedirect("meals");
