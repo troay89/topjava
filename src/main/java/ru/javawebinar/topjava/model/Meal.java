@@ -1,30 +1,59 @@
 package ru.javawebinar.topjava.model;
 
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+
+import org.hibernate.validator.constraints.Range;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+
+@NamedQueries({
+        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal u WHERE u.id=:id AND u.user.id=:userId"),
+        @NamedQuery(name = Meal.ALL_SORTED_DATETIME, query = "SELECT u FROM Meal u WHERE u.user.id=:userId AND u.dateTime >=:sdt AND u.dateTime <:edt order by u.dateTime DESC"),
+        @NamedQuery(name = Meal.ALL_SORTED, query = "SELECT u FROM Meal u WHERE u.user.id=:userId ORDER BY u.dateTime DESC"),
+})
+@Entity
+@Table(name = "meals",uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date_time"}, name = "meals_unique_user_datetime_idx")} )
 public class Meal extends AbstractBaseEntity {
-    private LocalDateTime dateTime;
 
-    private String description;
+    public static final String DELETE = "Meal.delete";
+    public static final String ALL_SORTED_DATETIME = "Meal.getByEmail";
+    public static final String ALL_SORTED = "Meal.getAllSorted";
 
+    @Column(name = "calories", nullable = false)
+    @NotNull
+    @Range(min = 100, max = 10000)
     private int calories;
 
+    @Column(name = "date_time", nullable = false, unique = true)
+    @NotNull
+    private LocalDateTime dateTime;
+
+    @Column(name = "description", nullable = false)
+    @NotBlank
+    @Size(min = 4, max = 30)
+    private String description;
+
+    @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull
     private User user;
 
     public Meal() {
     }
 
     public Meal(LocalDateTime dateTime, String description, int calories) {
-        this(null, dateTime, description, calories);
+        this(null, null, dateTime, description, calories);
     }
 
-    public Meal(Integer id, LocalDateTime dateTime, String description, int calories) {
+    public Meal(Integer id, User user, LocalDateTime dateTime, String description, int calories) {
         super(id);
+        this.user = user;
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
@@ -74,6 +103,7 @@ public class Meal extends AbstractBaseEntity {
     public String toString() {
         return "Meal{" +
                 "id=" + id +
+                ", userId=" + user +
                 ", dateTime=" + dateTime +
                 ", description='" + description + '\'' +
                 ", calories=" + calories +
