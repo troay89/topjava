@@ -1,9 +1,10 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Stopwatch;
 import org.junit.rules.TestRule;
-import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -13,13 +14,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -35,31 +35,31 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
-    private Date startTest;
-    private Date finishTest;
-
     @Autowired
     private MealService service;
 
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+    private static final StringBuilder results = new StringBuilder();
 
     @Rule
-    public final TestRule watchman = new TestWatcher() {
-
-
-        @Override
-        protected void starting(Description description) {
-            startTest = new Date();
-        }
+    public final TestRule watchman = new Stopwatch(){
 
         @Override
-        protected void finished(Description description) {
-            finishTest = new Date();
-            log.debug("Тест: " + description.getMethodName() + " время выполнение: " + (finishTest.getTime() - startTest.getTime()));
+        protected void finished(long nanos, Description description) {
+            String result = String.format("\n%-25s %7d", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+            results.append(result);
+            log.info(result + " ms\n");
         }
     };
 
-
+    @AfterClass
+    public static void printResult(){
+        log.info("\n---------------------------------------"+
+        "\nTest                       Duration, ms" +
+        "\n---------------------------------------" +
+        results +
+        "\n----------------------------------------");
+    }
 
     @Test
     public void delete() throws Exception {
@@ -78,7 +78,6 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void create() throws Exception {
         Meal created = service.create(getNew(), USER_ID);
         int newId = created.id();
@@ -89,7 +88,6 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void get() throws Exception {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
         MEAL_MATCHER.assertMatch(actual, ADMIN_MEAL1);
@@ -106,7 +104,6 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void update() throws Exception {
         Meal updated = getUpdated();
         service.update(updated, USER_ID);
@@ -119,13 +116,11 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void getAll() throws Exception {
         MEAL_MATCHER.assertMatch(service.getAll(USER_ID), MEALS);
     }
 
     @Test
-    @Transactional
     public void getBetweenInclusive() throws Exception {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(
                 LocalDate.of(2020, Month.JANUARY, 30),
@@ -134,7 +129,6 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void getBetweenWithNullDates() throws Exception {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), MEALS);
     }

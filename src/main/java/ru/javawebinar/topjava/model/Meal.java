@@ -27,16 +27,16 @@ public class Meal extends AbstractBaseEntity {
 
     @Column(name = "calories", nullable = false)
     @NotNull
-    @Range(min = 100, max = 10000)
+    @Range(min = 10, max = 5000)
     private int calories;
 
-    @Column(name = "date_time", nullable = false, unique = true)
+    @Column(name = "date_time", nullable = false)
     @NotNull
     private LocalDateTime dateTime;
 
     @Column(name = "description", nullable = false)
     @NotBlank
-    @Size(min = 4, max = 30)
+    @Size(min = 2, max = 120)
     private String description;
 
     @JoinColumn(name = "user_id", nullable = false)
@@ -48,12 +48,11 @@ public class Meal extends AbstractBaseEntity {
     }
 
     public Meal(LocalDateTime dateTime, String description, int calories) {
-        this(null, null, dateTime, description, calories);
+        this(null,  dateTime, description, calories);
     }
 
-    public Meal(Integer id, User user, LocalDateTime dateTime, String description, int calories) {
+    public Meal(Integer id, LocalDateTime dateTime, String description, int calories) {
         super(id);
-        this.user = user;
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
