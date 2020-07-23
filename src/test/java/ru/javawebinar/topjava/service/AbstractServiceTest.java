@@ -42,8 +42,6 @@ abstract public class AbstractServiceTest {
     public TestName name = new TestName();
 
     @Autowired
-    private Environment environment;
-
     public Environment env;
 
     @Rule
@@ -62,16 +60,5 @@ abstract public class AbstractServiceTest {
                 throw getRootCause(e);
             }
         });
-    }
-
-    @Before
-    public void checkOn() {
-        System.out.println(isJdbc() && "createWithException".equalsIgnoreCase(name.getMethodName()));
-        Assume.assumeFalse(isJdbc() && "createWithException".equalsIgnoreCase(name.getMethodName()));
-    }
-
-    private boolean isJdbc() {
-        return Arrays.stream(environment.getActiveProfiles())
-                .anyMatch(p -> p.equalsIgnoreCase("jdbc"));
     }
 }
