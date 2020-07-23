@@ -2,6 +2,8 @@ package ru.javawebinar.topjava.repository;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

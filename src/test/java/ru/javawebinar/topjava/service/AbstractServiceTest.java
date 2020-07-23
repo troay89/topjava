@@ -1,10 +1,15 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.Stopwatch;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -13,7 +18,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.ActiveDbProfileResolver;
 import ru.javawebinar.topjava.TimingRules;
 
+import java.util.Arrays;
+import java.util.Date;
+
 import static org.junit.Assert.assertThrows;
+import static ru.javawebinar.topjava.Profiles.DATAJPA;
+import static ru.javawebinar.topjava.Profiles.JPA;
 import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
 
 @ContextConfiguration({
@@ -29,7 +39,19 @@ abstract public class AbstractServiceTest {
     public static ExternalResource summary = TimingRules.SUMMARY;
 
     @Rule
+    public TestName name = new TestName();
+
+    @Autowired
+    private Environment environment;
+
+    public Environment env;
+
+    @Rule
     public Stopwatch stopwatch = TimingRules.STOPWATCH;
+
+    public boolean isJpaBased(){
+        return env.acceptsProfiles(org.springframework.core.env.Profiles.of(JPA, DATAJPA));
+    }
 
     //  Check root cause in JUnit: https://github.com/junit-team/junit4/pull/778
     public <T extends Throwable> void validateRootCause(Runnable runnable, Class<T> rootExceptionClass) {
@@ -40,5 +62,16 @@ abstract public class AbstractServiceTest {
                 throw getRootCause(e);
             }
         });
+    }
+
+    @Before
+    public void checkOn() {
+        System.out.println(isJdbc() && "createWithException".equalsIgnoreCase(name.getMethodName()));
+        Assume.assumeFalse(isJdbc() && "createWithException".equalsIgnoreCase(name.getMethodName()));
+    }
+
+    private boolean isJdbc() {
+        return Arrays.stream(environment.getActiveProfiles())
+                .anyMatch(p -> p.equalsIgnoreCase("jdbc"));
     }
 }
